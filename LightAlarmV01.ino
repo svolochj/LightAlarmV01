@@ -271,15 +271,33 @@ void loop() {
   
   //IR read signal and aoutput to Serial
   if (irrecv.decode(&results)) {
-   
-   switch (results){
-      case D7E84B1B:
-        Serial.println("Pult signal:  On"); 
-      default:
-        Serial.println(results.value, HEX);
-      break; 
-    }
+    String value = String(results.value);
+   // int intValue = int(value);
+//    switch (value) {
+//      case "3622325019":
+//        Serial.print("Pult signal: On - ");
+////      case 'D7E84B1B':
+////        Serial.print("Pult signal: Red - ");
+////         
+////      case 'D7E84B1B':
+////        Serial.print("Pult signal: Green - "); 
+////      case 'D7E84B1B':
+////        Serial.print("Pult signal: Blue - ");      
+//      default:
+//        Serial.print("Pult signal: Unknown - ");
+//      break; 
+//    }
 
+    if (value = "3622325019") {
+      Serial.print("Pult signal: On - ");
+    } else if(value = "3622325013") {
+      Serial.print("Pult signal: Red - ");
+    } else{
+      Serial.print("Pult signal: Unknown - ");
+    }  
+    
+    //Serial.println(results.value, HEX);
+    Serial.println(value);
     irrecv.resume(); // Receive the next value
   }
   
