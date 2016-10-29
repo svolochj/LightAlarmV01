@@ -189,9 +189,9 @@ void EveningAlarm(){
 
 //=========================================== IR sensor ++ 
 #include <IRremote.h>
-//#include <IRremoteInt.h>
+#include <IRremoteInt.h>
 //#include <ir_Lego_PF_BitStreamEncoder.h>
-
+//
 int RECV_PIN = 9;
 
 IRrecv irrecv(RECV_PIN);
@@ -202,6 +202,17 @@ decode_results results;
 //=========================================== IR sensor --
 
 
+
+
+
+
+
+
+
+
+//
+//                    SET UP
+//
 // the setup function runs once when you press reset or power the board
 void setup() {
   // initialize serial:
@@ -231,6 +242,17 @@ void setup() {
   irrecv.enableIRIn(); // Start the receiver  
 }
 
+
+
+
+
+
+
+
+
+//
+//                    LOOP
+//
 // the loop function runs over and over again forever
 void loop() {
 //  digitalWrite(13, HIGH);   // turn the LED on (HIGH is the voltage level)
@@ -245,16 +267,21 @@ void loop() {
   digitalWrite(gRedChanel,    LOW);
   digitalWrite(gGreenChanel,  LOW);
   digitalWrite(gBlueChanel,   LOW);
-
-  
   
   
   //IR read signal and aoutput to Serial
   if (irrecv.decode(&results)) {
-  Serial.println(results.value, HEX);
-  irrecv.resume(); // Receive the next value
+   
+   switch (results){
+      case D7E84B1B:
+        Serial.println("Pult signal:  On"); 
+      default:
+        Serial.println(results.value, HEX);
+      break; 
+    }
 
-
+    irrecv.resume(); // Receive the next value
+  }
   
 
   //Time
