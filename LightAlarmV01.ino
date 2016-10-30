@@ -15,6 +15,15 @@ int gRedChanel   = 10;
 int gGreenChanel = 11;
 int gBlueChanel  = 12;
 
+bool lRedChanelState   = false;
+bool lGreenChanelState = false;
+bool lBlueChanelState  = false; 
+
+
+int gRed   = 0;
+int gGreen = 0;
+int gBlue  = 0;   
+
 //=========================================== Clcok Start
 #include "Wire.h"
 #define DS3231_I2C_ADDRESS 0x68
@@ -84,7 +93,7 @@ void initiateTime()
   // retrieve data from DS3231
   readDS3231time(&second, &minute, &hour, &dayOfWeek, &dayOfMonth, &month, &year);
   
-  setTime(23,34,50,04,10,2016);
+  setTime(12,00,00,29,10,2016);
   //setTime(hour,minute,second,dayOfMonth,month,year);
 }
 
@@ -114,13 +123,13 @@ void readTime(){
 //=========================================== Alarm Start
 
 void initiateAlarm() {
-  Alarm.alarmRepeat(7,00,0, MorningAlarmStart); // 8:30am every day
-  Alarm.alarmRepeat(7,30,0, WakeUpAlarmStart);  // 8:30am every day
-  Alarm.alarmRepeat(7,45,0, GoAlarmStart);      // 8:30am every day
-  Alarm.alarmRepeat(23,35,0,EveningAlarm);  // 5:45pm every day 
-  //Alarm.alarmRepeat(dowSaturday,8,30,30,WeeklyAlarm);  // 8:30:30 every Saturday 
+ // Alarm.alarmRepeat(12,10,00, MorningAlarmStart);  // 8:30am every day
+ // Alarm.alarmRepeat(12,11,00, WakeUpAlarmStart);   // 8:30am every day
+ // Alarm.alarmRepeat(12,12,00, GoAlarmStart);       // 8:30am every day
+ // Alarm.alarmRepeat(12,00,5, EveningAlarm);       // 5:45pm every day 
 
- 
+  //Examples!
+  //Alarm.alarmRepeat(dowSaturday,8,30,30,WeeklyAlarm);  // 8:30:30 every Saturday 
   //Alarm.timerRepeat(15, Repeats);            // timer for every 15 seconds    
   //Alarm.timerOnce(10, OnceOnly);             // called once after 10 seconds 
 }
@@ -145,45 +154,111 @@ void GoAlarmStart(){
 
 // functions to be called when an alarm triggers: EveningAlarm
 void EveningAlarm(){
-  Serial.println("Alarm: - EveningAlarm"); 
+  Serial.println("Alarm: - EveningAlarm");
 
-  digitalWrite(gRedChanel,    HIGH);
-  digitalWrite(gGreenChanel,  LOW);
-  digitalWrite(gBlueChanel,   LOW);
+  int red   = 0;
+  int green = 0;
+  int blue  = 0;   
 
-  delay(1000);
+  for (int i = 0; i < 255; i++ ) {
+    if (i<165) {
+      red   = 255;
+      green = 0;
+      blue  = 0; 
+      delay(50);
+    }else if (i>=165 && i<215){
+      red   = 215;
+      green = 165;
+      blue  = 0; 
+      delay(50);
+    }else if (i>215){
+      //255
+      red   = 255;
+      green = 255;
+      blue  = 255; 
+      delay(50);
+    }
 
-    digitalWrite(gRedChanel,    HIGH);
-  digitalWrite(gGreenChanel,  HIGH);
-  digitalWrite(gBlueChanel,   LOW);
-
-  delay(1000);
-
-    digitalWrite(gRedChanel,    HIGH);
-  digitalWrite(gGreenChanel,  HIGH);
-  digitalWrite(gBlueChanel,   HIGH);
-
-    delay(1000);
-
-    digitalWrite(gRedChanel,    LOW);
-  digitalWrite(gGreenChanel,  HIGH);
-  digitalWrite(gBlueChanel,   HIGH);
-  
-    delay(1000);
-
-    digitalWrite(gRedChanel,    HIGH);
-  digitalWrite(gGreenChanel,  HIGH);
-  digitalWrite(gBlueChanel,   LOW);
-  
-    delay(1000);
-
-    digitalWrite(gRedChanel,    HIGH);
-  digitalWrite(gGreenChanel,  LOW);
-  digitalWrite(gBlueChanel,   HIGH);
-
+    Serial.print(i, DEC);
+    Serial.print(" - ");
+    setLight(red, green, blue);
+    //printSerialRGB(red, green, blue);
+  } 
 }
 
 
+void printSerialRGB() {
+    Serial.print("R:");
+    Serial.print(gRed);
+    Serial.print("G:");     
+    Serial.print(gGreen);
+    Serial.print(";B:");
+    Serial.print(gBlue);
+    Serial.println(";");
+}
+
+void setLight(int r, int g, int b) {
+    analogWrite(gRedChanel,    r);
+    analogWrite(gGreenChanel,  g);
+    analogWrite(gBlueChanel,   b);
+}
+
+void increaseRed() {  
+  //increase color
+  gRed++;    
+  setLight(gRed, gGreen, gBlue);
+  printSerialRGB();
+}
+
+void decreaseRed(){
+  //increase color
+  gRed--; 
+  setLight(gRed, gGreen, gBlue);
+  printSerialRGB();  
+}
+
+void increaseGreen() {  
+  //increase color
+  gGreen++;         
+  setLight(gRed, gGreen, gBlue);
+  printSerialRGB();
+}
+
+void decreaseGreen(){
+  //increase color
+  gGreen--; 
+  setLight(gRed, gGreen, gBlue);
+  printSerialRGB();  
+}
+
+void increaseBlue() {  
+  //increase color
+  gBlue++;         
+  setLight(gRed, gGreen, gBlue);
+  printSerialRGB();
+}
+
+void decreaseBlue(){
+  //increase color
+  gBlue--; 
+
+  setLight(gRed, gGreen, gBlue);
+  printSerialRGB();  
+}
+
+void decrease(char color){
+  //increase color
+  if (color == 'red') {
+    gRed--;         
+  } else if (color == 'gree') {
+    gGreen--;  
+  } else if (color = 'blue') {
+    gBlue--;  
+  }
+
+  setLight(gRed, gGreen, gBlue);
+  printSerialRGB();  
+}
 //=========================================== Alarm End
 
 
@@ -226,6 +301,10 @@ void setup() {
   pinMode(gGreenChanel, OUTPUT);
   pinMode(gBlueChanel,  OUTPUT);
 
+//  digitalWrite(gRedChanel,    LOW);
+//  digitalWrite(gGreenChanel,  LOW);
+//  digitalWrite(gBlueChanel,   LOW);
+
   setDS3231time(00,
                 00,
                 00,
@@ -260,33 +339,75 @@ void loop() {
 //  digitalWrite(13, LOW);    // turn the LED off by making the voltage LOW
 //  delay(1000);
 // wait for a second
-  bool lRedChanelState   = false;
-  bool lGreenChanelState = false;
-  bool lBlueChanelState  = false; 
-
-  digitalWrite(gRedChanel,    LOW);
-  digitalWrite(gGreenChanel,  LOW);
-  digitalWrite(gBlueChanel,   LOW);
-  
   
   //IR read signal and aoutput to Serial
   if (irrecv.decode(&results)) {
     String value = String(results.value);
 
-    if (value = "3622325019") {
+    if (value == "3622325019") {
       Serial.print("Pult signal: On - ");
-    } else if(value = "3622325013") {
+      EveningAlarm();
+    } else if(value == "2833276859") {
       Serial.print("Pult signal: Red - ");
+      setLight(255,0,0);
+    } else if(value == "961851831") {
+      Serial.print("Pult signal: Green - ");
+      setLight(0,255,0);
+    } else if(value == "3810010651") {
+      Serial.print("Pult signal: Blue - ");
+      setLight(0,0,255);
+    } else if(value == "1386468383") {
+      Serial.print("Pult signal: White - ");
+      setLight(255,255,255);
+
+    
+    } else if(value == "324312031") {
+      //red up
+      increaseRed();
+      Serial.print("Pult signal: Red Up - ");
+      Serial.println(value);
+    } else if(value == "1162296347") {
+      //red down
+       decreaseRed();
+      Serial.print("Pult signal: Red Down - ");
+      Serial.println(value);
+    } else if(value == "2747854299") {
+      //green up
+      increaseGreen();
+      Serial.print("Pult signal: Green Up - ");
+      Serial.println(value);
+    } else if(value == "2666828831") {
+      //green down
+       decreaseGreen();
+      Serial.print("Pult signal: Green Down -");
+      Serial.println(value);
+    } else if(value == "3238126971") {
+      //blue up
+      increaseBlue();
+      Serial.print("Pult signal: Blue Up - ");
+      Serial.println(value);
+    } else if(value == "4084712887") {
+      //blue down    
+      decreaseBlue();
+      Serial.print("Pult signal: Blue Down - ");
+      Serial.println(value);
+
+        
+    } else if(value == "2534850111") {
+      //DIY1
+      setLight(0,0,0);
+      Serial.print("Pult signal: DIY1 - ");
+      Serial.println(value);                           
     } else{
       Serial.print("Pult signal: Unknown - ");
+      Serial.println(value);
+        
+      Serial.print("HEX value: ");
+      Serial.println(results.value, HEX);
     }
-
-    Serial.println(value);
-      
-    Serial.print("HEX value: ");
-    Serial.println(results.value, HEX);
     irrecv.resume(); // Receive the next value
   }
+
   
 
   //Time
@@ -327,7 +448,7 @@ void loop() {
     break;
   }
 
-delay(1000);
+//delay(1000);
 
 //  if (Serial.read() == 'B') {
 //     Serial.println("Command: B");
